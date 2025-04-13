@@ -20,6 +20,7 @@ typedef struct Block {
     bool active;      // 블록 존재 여부
 } Block;
 
+
 int main(void)
 {
     // 윈도우 초기화
@@ -59,10 +60,15 @@ int main(void)
     // 점수 변수 초기화
     int score = 0;
 
+    //목숨 초기화
+    int heart = 3;
+
     // 게임 루프
     while (!WindowShouldClose())
     {
         float dt = GetFrameTime();
+
+        
 
         // === 업데이트 부분 === //
         if (currentScreen == TITLE)
@@ -75,6 +81,7 @@ int main(void)
                 ballSpeed = (Vector2){ 200, -200 };
                 paddle.x = SCREEN_WIDTH / 2.0f - paddle.width / 2;
                 score = 0;
+                heart = 3;
 
                 // 블록 배열 재설정
                 index = 0;
@@ -99,10 +106,6 @@ int main(void)
                 paddle.x += 300 * dt;
             if (IsKeyDown(KEY_LEFT))
                 paddle.x -= 300 * dt;
-
-            // 마우스 포인터 위치에 따라 패들 중앙 이동
-            /*float mouseX = GetMouseX();
-            paddle.x = mouseX - paddle.width / 2;*/
 
             // 패들이 화면을 벗어나지 않도록 제한
             if (paddle.x < 0) paddle.x = 0;
@@ -140,9 +143,16 @@ int main(void)
                 }
             }
 
-            // 공이 화면 아래로 떨어지면 게임 오버 처리
-            if (ballPos.y - ballRadius > SCREEN_HEIGHT)
+            // 공이 화면 아래로 떨어지면 목숨 하나 오버
+            if (ballPos.y - ballRadius > SCREEN_HEIGHT && heart != 0)
             {
+                heart--;
+                ballPos = (Vector2){ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f };
+                ballSpeed = (Vector2){ 200, 200 };
+            }
+
+            //목숨 3개 다 사라지면 게임 오버 처리
+            if (heart == 0) {
                 currentScreen = GAMEOVER;
             }
 
@@ -167,6 +177,11 @@ int main(void)
             if (IsKeyPressed(KEY_ENTER))
             {
                 currentScreen = TITLE;
+            }
+
+            if (IsKeyPressed(KEY_Q))
+            {
+                break;
             }
         }
 
@@ -208,6 +223,7 @@ int main(void)
             char scoreText[20];
             sprintf_s(scoreText, sizeof(scoreText), "Score: %d", score);
             DrawText(scoreText, 10, 10, 20, DARKGRAY);
+            DrawText(TextFormat("heart: %d", heart), 150, 10, 20, DARKGRAY);
         }
         else if (currentScreen == GAMEOVER)
         {
@@ -225,6 +241,10 @@ int main(void)
             const char* returnText = "Press ENTER to return";
             int returnTextWidth = MeasureText(returnText, 20);
             DrawText(returnText, SCREEN_WIDTH / 2 - returnTextWidth / 2, SCREEN_HEIGHT / 2 + 40, 20, GRAY);
+
+            const char* quitText = "Press Q to quit";
+            int quitTextWidth = MeasureText(quitText, 20);
+            DrawText(quitText, SCREEN_WIDTH / 2 - quitTextWidth / 2, SCREEN_HEIGHT / 2 + 80, 20, GRAY);
         }
         else if (currentScreen == WIN)
         {
@@ -242,6 +262,10 @@ int main(void)
             const char* restartText = "Press ENTER to play again";
             int restartTextWidth = MeasureText(restartText, 20);
             DrawText(restartText, SCREEN_WIDTH / 2 - restartTextWidth / 2, SCREEN_HEIGHT / 2 + 40, 20, GRAY);
+
+            const char* quitText = "Press Q to quit";
+            int quitTextWidth = MeasureText(quitText, 20);
+            DrawText(quitText, SCREEN_WIDTH / 2 - quitTextWidth / 2, SCREEN_HEIGHT / 2 + 80, 20, GRAY);
         }
 
         EndDrawing();
