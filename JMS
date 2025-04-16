@@ -104,7 +104,7 @@ int main() {
             }
 
             //확인용
-            if (IsKeyDown(KEY_A)) block_num = 0;
+            //if (IsKeyDown(KEY_A)) block_num = 0;
 
 
             //게임 오버
